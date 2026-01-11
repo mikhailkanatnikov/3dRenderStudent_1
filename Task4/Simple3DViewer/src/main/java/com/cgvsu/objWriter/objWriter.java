@@ -36,6 +36,8 @@ public class objWriter {
                 }
             }
 
+
+
             //нормали vn
             if (!model.normals.isEmpty()) {
                 for (Vector3f vn : model.normals) {
