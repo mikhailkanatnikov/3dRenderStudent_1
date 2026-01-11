@@ -21,9 +21,11 @@ import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
 
+import javafx.scene.control.Alert;
+
 public class GuiController {
 
-    final private float TRANSLATION = 0.5F;
+    final private float TRANSLATION = 5.0F;
 
     @FXML
     AnchorPane anchorPane;
@@ -65,6 +67,7 @@ public class GuiController {
     }
 
     @FXML
+    //
     private void onOpenModelMenuItemClick() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
@@ -82,8 +85,25 @@ public class GuiController {
             mesh = ObjReader.read(fileContent);
             // todo: обработка ошибок
         } catch (IOException exception) {
+            // 1. Создаем окошко ошибки
+            Alert alert = new Alert(Alert.AlertType.ERROR);
 
+            // 2. Заполняем текст
+            alert.setTitle("Ошибка чтения файла");
+            alert.setHeaderText("Не удалось прочитать файл");
+            alert.setContentText("Файл может быть поврежден или занят другим процессом.");
+
+            // 3. Показываем
+            alert.showAndWait();
+        } catch (Exception exception) {
+            // Ошибка парсинга OBJ (ObjReader выбросил исключение)
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка формата файла");
+            alert.setHeaderText("Файл имеет неверный формат OBJ");
+            alert.setContentText("Подробности: " + exception.getMessage());
+            alert.showAndWait();
         }
+
     }
 
     @FXML
