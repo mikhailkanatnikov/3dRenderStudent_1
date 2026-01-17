@@ -9,6 +9,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -39,6 +40,9 @@ public class GuiController {
 
     @FXML
     private Canvas canvas;
+
+    @FXML
+    private Label statusLabel;
 
     private List<Model> models = new ArrayList<>();
     private Model selectedModel = null;
@@ -111,6 +115,9 @@ public class GuiController {
             modelSelector.getItems().add(file.getName());
             modelSelector.getSelectionModel().selectLast();
             selectedModel = loadedModel;
+
+            updateStatusBar();
+
             // todo: обработка ошибок
         } catch (IOException exception) {
             //окошко ошибки
@@ -176,12 +183,24 @@ public class GuiController {
 
     //для выбора моделей
     @FXML
-    public void onModelSelected(){
+    public void onModelSelected() {
         int index = modelSelector.getSelectionModel().getSelectedIndex(); //что выбрал пользователь
         if (index >= 0) {
             selectedModel = models.get(index);
         }
+        updateStatusBar();
 
+    }
+
+    //статус бар
+    private void updateStatusBar() {
+        if (selectedModel != null) {
+            int amountVertices = selectedModel.getVertices().size();
+            int amountPolygons = selectedModel.getPolygons().size();
+            statusLabel.setText(String.format("Вершин: %d | Полигонов: %d", amountVertices, amountPolygons));
+        } else {
+            statusLabel.setText("Модель не загружена");
+        }
     }
 
     @FXML

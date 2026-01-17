@@ -9,13 +9,16 @@
 
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.collections.FXCollections?>
-<AnchorPane fx:id="anchorPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.cgvsu.GuiController" stylesheets="@styles.css">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<AnchorPane fx:id="anchorPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.cgvsu.GuiController"
+            stylesheets="@styles.css">
     <MenuBar>
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
-            <accelerator>
-                <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="F"/>
-            </accelerator>
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="F"/>
+                </accelerator>
             </MenuItem>
 
 
@@ -61,6 +64,14 @@
     </MenuBar>
 
 
-
     <Canvas fx:id="canvas" width="1600" height="870" AnchorPane.topAnchor="30.0"/>
+
+    <!-- Cтатус-бар -->
+    <HBox style="-fx-background-color: #2d2d30; -fx-padding: 5;"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0">
+        <Label fx:id="statusLabel" text="Загрузите модель"
+               style="-fx-text-fill: white; -fx-font-size: 13px;"/>
+    </HBox>
 </AnchorPane>
