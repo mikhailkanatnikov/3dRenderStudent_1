@@ -43,7 +43,6 @@ public class GuiController {
     private List<Model> models = new ArrayList<>();
     private Model selectedModel = null;
 
-
     private ComboBox<String> modelSelector;
 
     private Camera camera = new Camera(
@@ -60,7 +59,7 @@ public class GuiController {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
-        // Создаём ComboBox ОДИН РАЗ
+
         modelSelector = new ComboBox<>();
         modelSelector.setLayoutX(10);
         modelSelector.setLayoutY(35);
@@ -80,7 +79,7 @@ public class GuiController {
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
 
-            // Рисуем ВСЕ модели
+            // Рисуем модель
             if (selectedModel != null) {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, selectedModel, (int) width, (int) height);
             }
@@ -120,7 +119,6 @@ public class GuiController {
             alert.setTitle("Ошибка чтения файла");
             alert.setHeaderText("Не удалось прочитать файл");
             alert.setContentText("Файл может быть поврежден или занят другим процессом.");
-
 
             alert.showAndWait();
         } catch (Exception exception) {
@@ -176,6 +174,7 @@ public class GuiController {
 
     }
 
+    //для выбора моделей
     @FXML
     public void onModelSelected(){
         int index = modelSelector.getSelectionModel().getSelectedIndex(); //что выбрал пользователь
