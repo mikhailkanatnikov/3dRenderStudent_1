@@ -7,6 +7,7 @@ public class Polygon {
     private ArrayList<Integer> vertexIndices;
     private ArrayList<Integer> textureVertexIndices;
     private ArrayList<Integer> normalIndices;
+    private int lineNumber;
 
 
     public Polygon() {
@@ -40,5 +41,13 @@ public class Polygon {
 
     public ArrayList<Integer> getNormalIndices() {
         return normalIndices;
+    }
+
+    public int getLineNumber(){
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
     }
 }

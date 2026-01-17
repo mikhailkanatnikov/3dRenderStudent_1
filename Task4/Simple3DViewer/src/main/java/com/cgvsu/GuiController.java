@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.objWriter.objWriter;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
@@ -7,19 +8,25 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
+
+import com.cgvsu.objWriter.objWriter;
 
 import javafx.scene.control.Alert;
 
@@ -33,7 +40,11 @@ public class GuiController {
     @FXML
     private Canvas canvas;
 
-    private Model mesh = null;
+    private List<Model> models = new ArrayList<>();
+    private Model selectedModel = null;
+
+
+    private ComboBox<String> modelSelector;
 
     private Camera camera = new Camera(
             new Vector3f(0, 00, 100),
@@ -42,11 +53,23 @@ public class GuiController {
 
     private Timeline timeline;
 
+
     @FXML
     private void initialize() {
+        // Настраиваем изменение размеров Canvas
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
+        // Создаём ComboBox ОДИН РАЗ
+        modelSelector = new ComboBox<>();
+        modelSelector.setLayoutX(10);
+        modelSelector.setLayoutY(35);
+        modelSelector.setPromptText("Выберите модель");
+        modelSelector.setFocusTraversable(false); //чтобы стрелки не работали
+        modelSelector.setOnAction(e -> onModelSelected());
+        anchorPane.getChildren().add(modelSelector);
+
+        // Создаём Timeline для анимации
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
@@ -57,8 +80,9 @@ public class GuiController {
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
 
-            if (mesh != null) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height);
+            // Рисуем ВСЕ модели
+            if (selectedModel != null) {
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, selectedModel, (int) width, (int) height);
             }
         });
 
@@ -67,7 +91,7 @@ public class GuiController {
     }
 
     @FXML
-    //
+    // READER
     private void onOpenModelMenuItemClick() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
@@ -82,18 +106,22 @@ public class GuiController {
 
         try {
             String fileContent = Files.readString(fileName);
-            mesh = ObjReader.read(fileContent);
+            Model loadedModel = ObjReader.read(fileContent);
+
+            models.add(loadedModel);
+            modelSelector.getItems().add(file.getName());
+            modelSelector.getSelectionModel().selectLast();
+            selectedModel = loadedModel;
             // todo: обработка ошибок
         } catch (IOException exception) {
-            // 1. Создаем окошко ошибки
+            //окошко ошибки
             Alert alert = new Alert(Alert.AlertType.ERROR);
 
-            // 2. Заполняем текст
             alert.setTitle("Ошибка чтения файла");
             alert.setHeaderText("Не удалось прочитать файл");
             alert.setContentText("Файл может быть поврежден или занят другим процессом.");
 
-            // 3. Показываем
+
             alert.showAndWait();
         } catch (Exception exception) {
             // Ошибка парсинга OBJ (ObjReader выбросил исключение)
@@ -102,6 +130,57 @@ public class GuiController {
             alert.setHeaderText("Файл имеет неверный формат OBJ");
             alert.setContentText("Подробности: " + exception.getMessage());
             alert.showAndWait();
+        }
+
+    }
+
+    @FXML
+    // WRITER
+    public void onSaveModelMenuItemClick() {
+
+        if (selectedModel == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Нет модели");
+            alert.setContentText("Сначала загрузите модель!");
+            alert.showAndWait();
+            return;
+        }
+
+        FileChooser saveChooser = new FileChooser();
+        saveChooser.setTitle("Save Model");
+
+        File file = saveChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        String fileName = file.getAbsolutePath();
+        try {
+            new objWriter().write(selectedModel, fileName);
+            //успешно
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Победа!");
+            alert.setContentText("Модель успешно сохранена!");
+            alert.showAndWait();
+
+
+            // todo: обработка ошибок
+        } catch (IOException | IllegalArgumentException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка!");
+            alert.setContentText("Ошибка сохранения: " + e.getMessage());
+            alert.showAndWait();
+
+        }
+
+
+    }
+
+    @FXML
+    public void onModelSelected(){
+        int index = modelSelector.getSelectionModel().getSelectedIndex(); //что выбрал пользователь
+        if (index >= 0) {
+            selectedModel = models.get(index);
         }
 
     }

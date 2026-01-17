@@ -30,16 +30,14 @@ public class objWriter {
             }
 
             //текстуры vt
-            if (!model.textureVertices.isEmpty()) {
+            if (model.textureVertices!=null) {
                 for (Vector2f vt : model.textureVertices) {
                     writer.println("vt " + vt.getX() + " " + vt.getY());
                 }
             }
 
-
-
             //нормали vn
-            if (!model.normals.isEmpty()) {
+            if (model.normals!=null) {
                 for (Vector3f vn : model.normals) {
                     writer.println("vn " + vn.getX() + " " + vn.getY() + " " + vn.getZ());
                 }
@@ -49,7 +47,7 @@ public class objWriter {
             for (Polygon pol : model.polygons) {
 
                 //состоит только из вершин
-                if (pol.getTextureVertexIndices().isEmpty() && pol.getNormalIndices().isEmpty()) {
+                if (pol.getTextureVertexIndices()==null && pol.getNormalIndices()==null) {
                     writer.print("f ");
                     for (int v : pol.getVertexIndices()) {
                         writer.print((v + 1) + " ");
@@ -59,7 +57,7 @@ public class objWriter {
                 }
 
                 //вершины + текстуры
-                if (!pol.getTextureVertexIndices().isEmpty() && pol.getNormalIndices().isEmpty()) {
+                if (pol.getTextureVertexIndices()!=null && pol.getNormalIndices()==null) {
                     writer.print("f ");
                     for (int i = 0; i < pol.getVertexIndices().size(); i++) {
                         int verIndex = pol.getVertexIndices().get(i) + 1;
@@ -70,7 +68,7 @@ public class objWriter {
                 }
 
                 //вершины + нормали
-                if (pol.getTextureVertexIndices().isEmpty() && !pol.getNormalIndices().isEmpty()) {
+                if (pol.getTextureVertexIndices()==null && pol.getNormalIndices()!=null) {
                     writer.print("f ");
                     for (int i = 0; i < pol.getVertexIndices().size(); i++) {
                         int verInd = pol.getVertexIndices().get(i) + 1;
@@ -81,7 +79,7 @@ public class objWriter {
                 }
 
                 //вершины + текстуры + нормали
-                if (!pol.getTextureVertexIndices().isEmpty() && !pol.getNormalIndices().isEmpty()) {
+                if (pol.getTextureVertexIndices()!=null && pol.getNormalIndices()!=null) {
                     writer.print("f ");
                     for (int i = 0; i < pol.getVertexIndices().size(); i++) {
                         int ver = pol.getVertexIndices().get(i) + 1;

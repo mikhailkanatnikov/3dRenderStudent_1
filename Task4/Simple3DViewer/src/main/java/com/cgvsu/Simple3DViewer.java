@@ -25,7 +25,7 @@ public class Simple3DViewer extends Application {
         stage.setScene(scene);
         stage.show();
 
-        System.out.println("попа арбузная проверка 1");
+
     }
 
     public static void main(String[] args) {
